@@ -1,4 +1,4 @@
-# Speech-To-Text CLI Tool
+# Speech-To-Text-Docs CLI Tool
 
 A simple command-line tool to transcribe audio files using [AssemblyAI](https://www.assemblyai.com/) and automatically uploads the transcript to Google Docs. Supports advanced features like speaker diarization and key terms prompting (with the slam-1 model).
 
