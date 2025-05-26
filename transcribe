@@ -8,12 +8,65 @@ from google_docs_helper import create_doc_with_text
 import requests
 import time
 import argparse
+import mimetypes
+from pydub import AudioSegment
 
 load_dotenv(os.path.join(os.path.dirname(os.path.abspath(__file__)), ".env"))
 
 ASSEMBLYAI_API_KEY = os.getenv('ASSEMBLYAI_API_KEY')
 GOOGLE_CLIENT_ID = os.getenv('GOOGLE_CLIENT_ID')
 GOOGLE_CLIENT_SECRET = os.getenv('GOOGLE_CLIENT_SECRET')
+
+def is_valid_audio_file(file_path):
+    """Check if the file is a valid audio file."""
+    # Skip validation for URLs
+    if file_path.startswith(("http://", "https://")):
+        return True
+        
+    # Check if file exists
+    if not os.path.isfile(file_path):
+        print(f"Error: File '{file_path}' does not exist.")
+        return False
+        
+    # Get the file's MIME type
+    mime_type, _ = mimetypes.guess_type(file_path)
+    
+    # List of supported audio MIME types
+    supported_types = [
+        'audio/mpeg',           # .mp3
+        'audio/mp4',            # .m4a
+        'audio/wav',            # .wav
+        'audio/x-wav',          # .wav
+        'audio/ogg',            # .ogg
+        'audio/flac',           # .flac
+        'audio/x-m4a',          # .m4a
+        'audio/aac',            # .aac
+        'audio/webm',           # .webm
+    ]
+    
+    if mime_type not in supported_types:
+        print(f"Error: Unsupported file type '{mime_type}'. This tool only supports audio files.")
+        print("Supported formats: MP3, WAV, M4A, OGG, FLAC, AAC, WEBM")
+        return False
+        
+    return True
+
+def get_audio_length(file_path):
+    """Get the length of an audio file in minutes."""
+    try:
+        audio = AudioSegment.from_file(file_path)
+        length_minutes = len(audio) / (1000 * 60)  # Convert milliseconds to minutes
+        return length_minutes
+    except Exception as e:
+        print(f"Warning: Could not determine audio length: {e}")
+        return None
+
+def confirm_long_transcription(length_minutes):
+    """Ask user to confirm transcription of long audio files."""
+    print(f"\nWarning: This audio file is {length_minutes:.1f} minutes long.")
+    print("Transcribing long audio files may take significant time and API credits.")
+    response = input("Do you want to continue? (y/N): ").lower()
+    return response == 'y'
 
 def transcribe_with_slam(audio_file_path, keyterms_prompt=None):
     base_url = "https://api.assemblyai.com"
@@ -67,6 +120,18 @@ if __name__ == "__main__":
     args = parser.parse_args()
 
     audio_file_path = args.audio_file_path
+    
+    # Validate file type before proceeding
+    if not is_valid_audio_file(audio_file_path):
+        sys.exit(1)
+        
+    # Check audio length for local files
+    if not audio_file_path.startswith(("http://", "https://")):
+        length_minutes = get_audio_length(audio_file_path)
+        if length_minutes and length_minutes > 30:
+            if not confirm_long_transcription(length_minutes):
+                print("Transcription cancelled by user.")
+                sys.exit(0)
 
     if args.slam:
         transcript_text = transcribe_with_slam(audio_file_path, args.keyterms)
