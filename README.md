@@ -7,7 +7,8 @@ A simple command-line tool that transcribes audio files using [AssemblyAI](https
 - Automatic upload the transcript to Google Docs and get a shareable link
 - Supports speaker diarization (who said what)
 - Supports key terms prompting with the slam-1 model
-
+- Audio file validation and length checking
+- Warning for long audio files (>30 minutes)
 
 ## Quickstart: Setup Steps
 
@@ -17,8 +18,24 @@ A simple command-line tool that transcribes audio files using [AssemblyAI](https
    - Sign up and get your API key.
 3. **Create and fill out your `.env` file**
    - Add your AssemblyAI and Google credentials.
-4. **Install Python dependencies**
-   - Use a virtual environment and `pip install -r requirements.txt`.
+4. **Install Dependencies**
+   - Install ffmpeg (required for audio processing):
+     ```sh
+     # On macOS
+     brew install ffmpeg
+     
+     # On Ubuntu/Debian
+     sudo apt-get install ffmpeg
+     
+     # On Windows (using Chocolatey)
+     choco install ffmpeg
+     ```
+   - Install Python dependencies:
+     ```sh
+     python3 -m venv .venv
+     source .venv/bin/activate  # On Windows use: .venv\Scripts\activate
+     pip install -r requirements.txt
+     ```
 5. **(Optional but recommended) Set up the CLI command**
    - Add your project directory to your `PATH` or create a symlink for global access.
 6. **Run the tool!**
