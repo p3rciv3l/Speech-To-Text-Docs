@@ -2,5 +2,4 @@ assemblyai
 python-dotenv
 google-auth
 google-auth-oauthlib
-google-api-python-client
-pydub 
+google-api-python-client 
