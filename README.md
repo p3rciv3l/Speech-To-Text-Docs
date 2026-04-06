@@ -131,6 +131,7 @@ transcribe /path/to/audiofile.mp3 --slam --keyterms "term1" "term2" ...
 - The tool will print the transcript and a link to the Google Doc.
 
 ## Notes
+- The `transcribe` script uses a `#!/usr/bin/env python3` shebang. Make sure to run it from within your virtualenv, or update the shebang to point to your venv's Python if you want to call it directly (e.g. `#!/path/to/your/.venv/bin/python3`).
 - Your `.env` file is for the AssemblyAI API key. Google Docs API **requires** the `credentials.json` file for OAuth. This file must be in your project directory.
 - You only need to add yourself as a test user once per project.
 - If you want to use another Google account, add it as a test user (you get up to 100 test users).
